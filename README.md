@@ -1,3 +1,7 @@
+👤 Author - Geoff Bremner.
+
+🔗 Connect and See More Projects: https://linktr.ee/gbaudio
+
 # dialogue-sanitize
 
 A pragmatic, local Python utility designed to automatically detect and surgically remove spoken filler words (`"um"`, `"uh"`, `"uhm"`) from audio files. 
@@ -23,7 +27,7 @@ The tool optimizes local CPU performance by chunking long audio files at silence
 - `models.py`: Structural data abstractions (`Chunk`, `ExclusionZone`).
 - `system_prompt.txt` Core system prompt configuration file. It contains the localized developer steering rules, constraints, and instructions based on the Andrej Karpathy configuration pattern to instantly align LLM context windows upon folder initialization.
 
-## Installation - Tested only on Geoff's local -
+## Installation & Quickstart (Tested only on Geoff's local)
 
 Ensure your local terminal environment is running natively in 64-bit mode (`x86_64`). 
 
@@ -32,7 +36,7 @@ Ensure your local terminal environment is running natively in 64-bit mode (`x86_
    /usr/bin/arch -x86_64 python3.13 -m venv .venv
    source .venv/bin/activate
 2. Quick start - assuming test file "um-test2.wav" is in "test-files"   
-   python main.py test-files/um-test2.wav output.wav
+   ```python main.py test-files/um-test2.wav output.wav
 
 # dialogue-sanitize Roadmap & Backlog
 
