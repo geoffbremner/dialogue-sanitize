@@ -22,7 +22,7 @@ The tool optimizes local CPU performance by chunking long audio files at silence
 - `utils.py`: Core digital signal processing (DSP) helpers (mono conversion, RMS dB calculations, zero-crossing finders).
 - `models.py`: Structural data abstractions (`Chunk`, `ExclusionZone`).
 
-## Installation
+## Installation - Tested only on Geoff's local -
 
 Ensure your local terminal environment is running natively in 64-bit mode (`x86_64`). 
 
@@ -30,3 +30,35 @@ Ensure your local terminal environment is running natively in 64-bit mode (`x86_
    ```bash
    /usr/bin/arch -x86_64 python3.13 -m venv .venv
    source .venv/bin/activate
+2. Quick start - assuming test file "um-test2.wav" is in "test-files"   
+   python main.py test-files/um-test2.wav output.wav
+
+# dialogue-sanitize Roadmap & Backlog
+
+## TODO 1: Implement Adaptive Zero-Crossing Gate & Verbose Skipping
+
+### Architectural Goal
+Move zero-crossing validation out of the data collection phase and into the audio splicing engine (`editor.py`). Protect adjacent phonemes from getting aggressively clipped by establishing a hard max-deviation window for edits.
+
+### Execution Steps
+1. **Remove DSP code from transcription tasks:** Ensure `transcriber.py` remains focused solely on converting model tokens to absolute time coordinates.
+2. **Implement Max Deviation Constraint in `editor.py`:**
+   - Update `rebuild_audio()` to verify the sample offset returned by `find_nearest_zero_crossing()`.
+   - If the nearest zero-crossing index deviates from the target timestamp boundary by more than a safe threshold (e.g., `MAX_DEVIATION_MS = 15`), flag the cut as high-risk.
+3. **Add High-Verbosity Warning Logs:**
+   - Instead of silently slicing through a complex waveform or dropping the execution, print an explicit warning to stdout:
+     `[SKIP ALERT] Filler word "um" at 00:04:23.150 skipped. No stable zero-crossing found within 15ms radius (Local RMS: -12.4 dBFS). Boundary context preserved.`
+4. **Unit Test Coverage:**
+   - Create a synthetic test WAV file with a continuous high-amplitude sine wave to simulate a "no zero-crossing failure" scenario and confirm that the engine skips it gracefully.
+
+## TODO 2: Stress-Test with Long-Form Content
+- **Objective:** Run a raw, unedited multihour podcast track (>60 mins) to benchmark heap usage.
+- **Verification Metrics:** Ensure memory allocation for local array stitching doesn't scale linearly with audio length, verifying that `tmp_chunks` allocation blocks are correctly freed post-inference.
+
+## TODO 3: Cloud Infrastructure Splicing
+- **Objective:** Shift local CPU bottlenecks to an on-demand container environment.
+- **Target Stack:** Containerize the application using a minimal `Dockerfile` optimized for CPU matrix mathematics (using shared `OpenBLAS` headers) and deploy via an ephemeral AWS Fargate task or Google Cloud Run architecture triggered by cloud bucket uploads.
+
+## TODO 4: Merchant Layer Integration (PayPal linking)
+- **Objective:** Build an automated webhook receiver to gateway processing access behind payment verification.
+- **Target Stack:** Implement a lightweight web engine layer (FastAPI) that exposes an endpoint for PayPal Instant Payment Notifications (IPN). Upon receipt of a valid `payment_status==Completed` capture flag, release the user's processing session token to run the sanitation pipeline on their payload.
