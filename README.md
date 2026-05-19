@@ -21,6 +21,7 @@ The tool optimizes local CPU performance by chunking long audio files at silence
 - `editor.py`: Executes the non-destructive audio array splicing, crossfades, and zero-crossing lookaheads.
 - `utils.py`: Core digital signal processing (DSP) helpers (mono conversion, RMS dB calculations, zero-crossing finders).
 - `models.py`: Structural data abstractions (`Chunk`, `ExclusionZone`).
+- `system_prompt.txt` Core system prompt configuration file. It contains the localized developer steering rules, constraints, and instructions based on the Andrej Karpathy configuration pattern to instantly align LLM context windows upon folder initialization.
 
 ## Installation - Tested only on Geoff's local -
 
@@ -38,9 +39,9 @@ Ensure your local terminal environment is running natively in 64-bit mode (`x86_
 ## TODO 1: Implement Adaptive Zero-Crossing Gate & Verbose Skipping
 
 ### Architectural Goal
-Move zero-crossing validation out of the data collection phase and into the audio splicing engine (`editor.py`). Protect adjacent phonemes from getting aggressively clipped by establishing a hard max-deviation window for edits.
+Objective: Refine the current slicing boundaries inside editor.py. The cut infrastructure works, but boundary positioning can be significantly optimized.
 
-### Execution Steps
+### SUGGESTED Steps - we HAVE to review this
 1. **Remove DSP code from transcription tasks:** Ensure `transcriber.py` remains focused solely on converting model tokens to absolute time coordinates.
 2. **Implement Max Deviation Constraint in `editor.py`:**
    - Update `rebuild_audio()` to verify the sample offset returned by `find_nearest_zero_crossing()`.
@@ -62,3 +63,19 @@ Move zero-crossing validation out of the data collection phase and into the audi
 ## TODO 4: Merchant Layer Integration (PayPal linking)
 - **Objective:** Build an automated webhook receiver to gateway processing access behind payment verification.
 - **Target Stack:** Implement a lightweight web engine layer (FastAPI) that exposes an endpoint for PayPal Instant Payment Notifications (IPN). Upon receipt of a valid `payment_status==Completed` capture flag, release the user's processing session token to run the sanitation pipeline on their payload.
+
+## TODO 5: Implement Multi-Tiered "Um-Removal Intensity" Modes (The Dial/Knob Concept)
+Objective: Introduce an edit aggressiveness configurations dial (Low, Medium, High) via CLI flags (e.g., --intensity medium).
+
+Tuning Targets:
+
+Low: Only cuts clear, isolated disfluencies with highly confident ML tokens. Preserves natural conversational pauses.
+
+Medium: Standard default pipeline execution profile.
+
+High: Aggressive sanitation. Drops confidence thresholds, reduces padding parameters to execute lightning-fast micro-cuts, and cleans conversational stutters tightly.
+
+## TODO 6: Implement Global Verbose Logging Framework
+Objective: Replace standard script print blocks with structured, repository-wide verbose diagnostics across all runtime modules.
+
+Execution: Introduce a --verbose flag tracking granular pipeline statuses, including local chunk RMS values, model token confidence scores, and specific sample offset corrections computed by the zero-crossing mechanics.
