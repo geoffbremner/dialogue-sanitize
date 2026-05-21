@@ -12,7 +12,7 @@ TARGET_FILLERS = {
 
 INITIAL_PROMPT = "Uh, um, okay. Uhm, so yeah."
 
-TIMESTAMP_PAD_SEC = 0.5
+TIMESTAMP_PAD_SEC = 0.25
 
 
 model = WhisperModel(
