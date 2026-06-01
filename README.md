@@ -61,12 +61,12 @@ Objective: Refine the current slicing boundaries inside editor.py. The cut infra
 - **Verification Metrics:** Ensure memory allocation for local array stitching doesn't scale linearly with audio length, verifying that `tmp_chunks` allocation blocks are correctly freed post-inference.
 
 ## TODO 3: Cloud Infrastructure Splicing
-- **Objective:** Shift local CPU bottlenecks to an on-demand container environment.
-- **Target Stack:** Containerize the application using a minimal `Dockerfile` optimized for CPU matrix mathematics (using shared `OpenBLAS` headers) and deploy via an ephemeral AWS Fargate task or Google Cloud Run architecture triggered by cloud bucket uploads.
+- Objective: Shift local CPU bottlenecks to an on-demand container environment.
+- Target Stack: Containerize the application using a minimal `Dockerfile` optimized for CPU matrix mathematics (using shared `OpenBLAS` headers) and deploy via an ephemeral AWS Fargate task or Google Cloud Run architecture triggered by cloud bucket uploads.
 
 ## TODO 4: Merchant Layer Integration (PayPal linking)
-- **Objective:** Build an automated webhook receiver to gateway processing access behind payment verification.
-- **Target Stack:** Implement a lightweight web engine layer (FastAPI) that exposes an endpoint for PayPal Instant Payment Notifications (IPN). Upon receipt of a valid `payment_status==Completed` capture flag, release the user's processing session token to run the sanitation pipeline on their payload.
+- Objective Build an automated webhook receiver to gateway processing access behind payment verification.
+- Target Stack: Implement a lightweight web engine layer (FastAPI) that exposes an endpoint for PayPal Instant Payment Notifications (IPN). Upon receipt of a valid `payment_status==Completed` capture flag, release the user's processing session token to run the sanitation pipeline on their payload.
 
 ## TODO 5: Implement Multi-Tiered "Um-Removal Intensity" Modes (The Dial/Knob Concept)
 Objective: Introduce an edit aggressiveness configurations dial (Low, Medium, High) via CLI flags (e.g., --intensity medium).
@@ -83,3 +83,9 @@ High: Aggressive sanitation. Drops confidence thresholds, reduces padding parame
 Objective: Replace standard script print blocks with structured, repository-wide verbose diagnostics across all runtime modules.
 
 Execution: Introduce a --verbose flag tracking granular pipeline statuses, including local chunk RMS values, model token confidence scores, and specific sample offset corrections computed by the zero-crossing mechanics.
+
+## TODO 7: Increase word timestamp accuracy
+
+- Potential approach 1: Integrate WhisperX (Forced Alignment via Wav2Vec2).
+- Potential approach 2: Integrate whisper-timestamped (Dynamic Time Warping via cross-attention weights).
+
